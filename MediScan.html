@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MediScan</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+<style>
+:root{--bg:#f6f5f2;--card:#fff;--ink:#14171c;--mute:#5b626c;--line:#dedbd4;--or:#ff5a1f;--orink:#fff;--ok:#0b7a3b;--okbg:#e3f4ea;--wa:#8a5200;--wabg:#fff1d6;--er:#b3261e;--erbg:#fde7e5;--inbg:#eceae5;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101216;--card:#1a1d23;--ink:#f1efe9;--mute:#a4a9b1;--line:#2c3038;--ok:#6fd49a;--okbg:#14301f;--wa:#ffc766;--wabg:#33260c;--er:#ff9a92;--erbg:#3a1714;--inbg:#23262d}}
+:root[data-theme="dark"]{--bg:#101216;--card:#1a1d23;--ink:#f1efe9;--mute:#a4a9b1;--line:#2c3038;--ok:#6fd49a;--okbg:#14301f;--wa:#ffc766;--wabg:#33260c;--er:#ff9a92;--erbg:#3a1714;--inbg:#23262d}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:18px/1.5 "Atkinson Hyperlegible",system-ui,Arial,sans-serif;min-height:100%}
+[hidden]{display:none!important}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;border:2px solid var(--ink);background:var(--card);border-radius:12px;min-height:52px;padding:0 18px;font-weight:700}
+button.p{background:var(--or);border-color:var(--or);color:var(--orink)}
+button.g{border-color:var(--line)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--or);outline-offset:2px}
+input{width:100%;min-height:52px;border:2px solid var(--line);background:var(--card);border-radius:12px;padding:0 14px}
+h1,h2,h3{margin:0;line-height:1.2}
+.wrap{max-width:640px;margin:0 auto;padding:16px}
+.brand{font-weight:700;font-style:italic;font-size:26px;letter-spacing:-.5px}.brand b{color:var(--or)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 16px;max-width:640px;margin:0 auto}
+.top small{color:var(--mute)}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:2px solid var(--ink)}
+nav .in{display:flex;max-width:640px;margin:0 auto}
+nav button{flex:1;border:0;border-radius:0;background:none;min-height:56px;border-bottom:5px solid transparent}
+nav button[aria-current=true]{border-bottom-color:var(--or)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+.mute{color:var(--mute)}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1}
+.hero{font-size:30px;font-weight:700;font-style:italic;line-height:1.15;margin:8px 0 6px}
+.big{width:100%;min-height:76px;font-size:22px;margin:12px 0}
+#reader{width:100%;border-radius:12px;overflow:hidden}
+.item{display:flex;gap:14px;align-items:center;width:100%;text-align:left;margin:8px 0;border-color:var(--line);min-height:68px;padding:10px 14px}
+.em{font-size:34px;line-height:1}
+.chip{display:inline-block;padding:2px 10px;border-radius:99px;background:var(--inbg);font-size:15px}
+.alert{display:flex;gap:12px;border-radius:12px;padding:14px;margin:10px 0;font-weight:700;border:2px solid}
+.alert span:last-child{font-weight:400}.alert b{display:block}
+.ok{background:var(--okbg);color:var(--ok);border-color:var(--ok)}
+.wa{background:var(--wabg);color:var(--wa);border-color:var(--wa)}
+.er{background:var(--erbg);color:var(--er);border-color:var(--er)}
+.photo{height:130px;border-radius:12px;background:var(--inbg);display:flex;align-items:center;justify-content:center;font-size:64px;position:relative}
+.photo i{position:absolute;bottom:6px;right:10px;font-size:13px;color:var(--mute);font-style:normal}
+.sec{border-top:1px solid var(--line);padding:12px 0}.sec h3{font-size:19px;margin-bottom:4px}
+.err{color:var(--er);font-weight:700;min-height:24px}
+footer{max-width:640px;margin:0 auto;padding:8px 16px 32px;font-size:14px;color:var(--mute)}
+.tabs{display:flex;gap:8px;margin-bottom:12px}.tabs button{flex:1}.tabs [aria-pressed=true]{background:var(--ink);color:var(--bg)}
+label{display:block;font-weight:700;margin:12px 0 4px}
+</style>
+</head>
+<body>
+
+<div id="auth" class="wrap">
+  <div class="brand" style="font-size:40px">Medi<b>Scan</b></div>
+  <p class="hero">Scan any medicine, know everything.</p>
+  <div class="card">
+    <div class="tabs" role="group" aria-label="Account">
+      <button id="tl" aria-pressed="true" onclick="authMode('login')">Log in</button>
+      <button id="ts" aria-pressed="false" onclick="authMode('signup')">Sign up</button>
+    </div>
+    <label for="un">Username</label><input id="un" autocomplete="username" autocapitalize="none">
+    <label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password">
+    <p id="aerr" class="err" role="alert"></p>
+    <button id="abtn" class="p" style="width:100%" onclick="doAuth()">Log in</button>
+    <button class="g" style="width:100%;margin-top:10px" onclick="enter('guest')">Continue without login</button>
+    <p class="mute" style="font-size:15px">Login is optional. Scan and search work without it. Demo account: username <b>demo</b>, password <b>demo123</b>. Accounts are stored only in this browser (prototype).</p>
+  </div>
+  <p class="mute" style="font-size:14px">MediScan is for information only. Always follow your doctor's or pharmacist's advice.</p>
+</div>
+
+<div id="app" hidden>
+  <div class="top"><div class="brand">Medi<b>Scan</b></div><div><small id="who"></small> <button id="lgBtn" class="g" style="min-height:40px;padding:0 12px" onclick="logout()">Log out</button></div></div>
+  <nav><div class="in">
+    <button data-v="scan" onclick="show('scan')">Scan</button>
+    <button data-v="search" onclick="show('search')">Search</button>
+    <button data-v="saved" onclick="show('saved')">Saved</button>
+  </div></nav>
+  <main class="wrap">
+    <section id="v-scan">
+      <h2>Scan the medicine pack</h2>
+      <p class="mute">Point your camera at the barcode or QR code on the pack.</p>
+      <div id="reader" hidden></div><div id="tmp" hidden></div>
+      <button id="camBtn" class="p big" onclick="startCam()">Open camera</button>
+      <button id="stopBtn" class="big g" onclick="stopCam()" hidden>Stop camera</button>
+      <p id="serr" class="err" role="alert"></p>
+      <div class="card">
+        <h3>No camera, or barcode damaged?</h3>
+        <label for="photo">Upload a photo of the code</label>
+        <input id="photo" type="file" accept="image/*" onchange="fromPhoto(this)">
+        <label for="code">Or type the number under the barcode</label>
+        <div class="row"><input id="code" inputmode="numeric" placeholder="e.g. 8901000000011"><button class="p" style="flex:0 0 auto" onclick="lookup($('code').value)">Check</button></div>
+        <p style="margin:12px 0 0">Or <a href="#" onclick="show('search');return false" style="color:var(--or);font-weight:700">search by medicine name</a>.</p>
+      </div>
+      <div class="card">
+        <h3>Try a demo code</h3>
+        <p class="mute" style="margin:0 0 8px">No pack handy? Tap a code to see how a result looks.</p>
+        <div id="demo" class="row"></div>
+      </div>
+    </section>
+
+    <section id="v-search" hidden>
+      <h2>Search by name</h2>
+      <label for="q">Medicine name</label>
+      <div class="row"><input id="q" placeholder="Any medicine, e.g. Dolo 650" oninput="doSearch()" autocomplete="off"><button class="p" style="flex:0 0 auto" onclick="go()">Search</button></div>
+      <div id="sres" style="margin-top:8px"></div>
+    </section>
+
+    <section id="v-saved" hidden>
+      <h2>Saved medicines</h2>
+      <div id="saved"></div>
+      <h2 style="margin-top:24px">My medicines</h2>
+      <p class="mute">Medicines you take now. MediScan warns you if a new one may clash with them.</p>
+      <div id="mine"></div>
+    </section>
+
+    <section id="v-result" hidden></section>
+  </main>
+  <footer>Demo data and AI summaries are not verified medical advice. MediScan is for information only. Always follow your doctor's or pharmacist's advice.<br>Byte Race 2026 · Vivekananda College of Engineering &amp; Technology, Puttur</footer>
+</div>
+
+<script>
+// ---------- storage (try/catch, memory fallback) ----------
+var mem={};
+function sget(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return k in mem?mem[k]:d}}
+function sset(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){mem[k]=v}}
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+
+// ---------- DEMO medicine data (not verified medical information) ----------
+var DB=[
+{c:'8901000000011',n:'Paracetamol 500 mg',g:'paracetamol',m:'Demo Pharma',e:'💊',u:'Fever, headache, body ache, toothache and other mild to moderate pain.',d:'Adults: 1 tablet every 4 to 6 hours if needed. Do not take more than 8 tablets in 24 hours.',s:'Rare at normal doses: nausea or skin rash. Too much can seriously damage the liver.',w:'Do not take other products that also contain paracetamol. Avoid alcohol. Ask a doctor first if you have liver disease.',st:'Store below 30°C in a dry place, away from light and out of reach of children.',x:[]},
+{c:'8901000000028',n:'Ibuprofen 400 mg',g:'ibuprofen',m:'Demo Pharma',e:'💊',u:'Pain, swelling and fever, such as joint pain, period pain and toothache.',d:'Adults: 1 tablet up to 3 times a day, after food. Do not take more than 3 tablets in a day unless a doctor tells you to.',s:'Stomach upset, heartburn, nausea, dizziness.',w:'Not for people with stomach ulcers, kidney disease or NSAID-triggered asthma. Avoid in late pregnancy. Always take with food.',st:'Store below 25°C in a dry place, away from children.',x:[['aspirin','Together they raise the risk of stomach bleeding, and ibuprofen can weaken the heart protection of low-dose aspirin.'],['diclofenac','Both are pain killers of the same type. Do not take them together.']]},
+{c:'8901000000035',n:'Aspirin 75 mg',g:'aspirin',m:'Demo Pharma',e:'❤️',u:'Used on a doctor\'s advice to lower the risk of blood clots, heart attack and stroke.',d:'1 tablet once a day, only as prescribed by your doctor.',s:'Stomach irritation, easy bruising, bleeding.',w:'Do not start on your own. Never give to children under 16. Tell your doctor before any surgery or dental work.',st:'Store below 25°C in a dry place. Keep away from moisture.',x:[['ibuprofen','Together they raise the risk of stomach bleeding, and ibuprofen can weaken the heart protection of aspirin.'],['diclofenac','Together they raise the risk of stomach bleeding.']]},
+{c:'8901000000042',n:'Cetirizine 10 mg',g:'cetirizine',m:'Demo Pharma',e:'🤧',u:'Allergies: sneezing, runny nose, itchy eyes, skin rash and hives.',d:'Adults and children 12 and over: 1 tablet once a day.',s:'Sleepiness, dry mouth, headache.',w:'May make you drowsy. Do not drive or use machines if sleepy. Avoid alcohol. Ask a doctor if you have kidney disease.',st:'Store below 25°C in a dry place.',x:[]},
+{c:'8901000000059',n:'Omeprazole 20 mg',g:'omeprazole',m:'Demo Pharma',e:'🔥',u:'Acidity, heartburn, acid reflux and stomach ulcers.',d:'1 capsule once a day before breakfast. Swallow whole with water.',s:'Headache, nausea, diarrhoea, stomach pain.',w:'Use for a long time only on a doctor\'s advice. See a doctor if you have black stools or trouble swallowing.',st:'Store below 25°C in a dry place, away from light.',x:[]},
+{c:'8901000000066',n:'ORS Powder Sachet',g:'ors',m:'Demo Pharma',e:'💧',u:'Replaces water and salts lost during diarrhoea or vomiting.',d:'Mix 1 sachet in 1 litre of clean drinking water. Sip often. Throw away any mixed drink after 24 hours.',s:'Vomiting if drunk too fast. Sip slowly.',w:'Use exactly 1 litre of water per sachet. See a doctor if diarrhoea lasts more than 2 days, there is blood in the stool or high fever, or for a baby.',st:'Store in a cool, dry place. Do not use if the sachet is damaged.',x:[]},
+{c:'8901000000073',n:'Loperamide 2 mg',g:'loperamide',m:'Demo Pharma',e:'🩹',u:'Short-term relief of loose motions (diarrhoea).',d:'Adults: 2 capsules first, then 1 after each loose stool. Do not go above the daily maximum printed on the pack.',s:'Constipation, bloating, dizziness.',w:'Not for children under 12. Do not use if there is blood in the stool or fever. Drink plenty of fluids.',st:'Store below 25°C in a dry place.',x:[]},
+{c:'8901000000080',n:'Diclofenac 50 mg',g:'diclofenac',m:'Demo Pharma',e:'🦴',u:'Pain and swelling, such as joint pain and back pain.',d:'Adults: 1 tablet 2 to 3 times a day after food, only as advised by a doctor or pharmacist. Short-term use.',s:'Stomach pain, nausea, dizziness.',w:'Avoid with heart disease, stomach ulcers or kidney problems. Take after food.',st:'Store below 25°C in a dry place.',x:[['ibuprofen','Both are pain killers of the same type. Do not take them together.'],['aspirin','Together they raise the risk of stomach bleeding.']]}
+];
+var user=null,scanner=null,cur=null,scanned=false;
+
+// ---------- auth (prototype only, stored in this browser) ----------
+var mode='login';
+async function hash(s){try{var b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('')}catch(e){return btoa(s)}}
+function authMode(m){mode=m;$('tl').setAttribute('aria-pressed',m=='login');$('ts').setAttribute('aria-pressed',m=='signup');$('abtn').textContent=m=='login'?'Log in':'Create account';$('aerr').textContent=''}
+async function doAuth(){
+  var u=$('un').value.trim().toLowerCase(),p=$('pw').value,users=sget('ms_users',{});
+  if(!users.demo)users.demo=await hash('demo123');
+  if(!u||!p){$('aerr').textContent='Enter a username and password.';return}
+  if(mode=='signup'){
+    if(u.length<3||p.length<4){$('aerr').textContent='Username needs 3+ characters and password 4+.';return}
+    if(users[u]||u=='guest'){$('aerr').textContent='That username is taken. Choose another.';return}
+    users[u]=await hash(p);sset('ms_users',users);
+  }else if(users[u]!==await hash(p)){$('aerr').textContent='Wrong username or password.';sset('ms_users',users);return}
+  sset('ms_users',users);sset('ms_session',u);enter(u);
+}
+function enter(u){user=u;$('auth').hidden=true;$('app').hidden=false;var g=u=='guest';$('who').textContent=g?'Guest':'Hi, '+u;$('lgBtn').textContent=g?'Log in':'Log out';$('lgBtn').onclick=g?openAuth:logout;$('pw').value='';$('aerr').textContent='';
+  $('demo').innerHTML=DB.slice(0,4).map(function(m){return '<button class="g" onclick="lookup(\''+m.c+'\')">'+esc(m.n.split(' ')[0])+'</button>'}).join('')+'<button class="g" onclick="lookup(\'0000000000000\')">Unknown code</button>';
+  show('scan')}
+function openAuth(){stopCam();window.speechSynthesis&&speechSynthesis.cancel();$('app').hidden=true;$('auth').hidden=false}
+function logout(){stopCam();window.speechSynthesis&&speechSynthesis.cancel();sset('ms_session','');enter('guest')}
+
+// ---------- navigation ----------
+function show(v){
+  if(v!='scan')stopCam();
+  ['scan','search','saved','result'].forEach(function(x){$('v-'+x).hidden=x!=v});
+  document.querySelectorAll('nav button').forEach(function(b){b.setAttribute('aria-current',b.dataset.v==v)});
+  if(v=='saved')renderSaved();
+  if(v=='search')doSearch();
+  window.scrollTo(0,0);
+}
+
+// ---------- scanning ----------
+async function startCam(){
+  $('serr').textContent='';
+  if(!window.Html5Qrcode){$('serr').textContent='The scanner could not load. Use the photo upload or type the number below.';return}
+  try{
+    $('reader').hidden=false;$('camBtn').hidden=true;$('stopBtn').hidden=false;
+    scanner=new Html5Qrcode('reader');
+    await scanner.start({facingMode:'environment'},{fps:10,qrbox:{width:260,height:160}},function(t){stopCam();lookup(t)},function(){});
+  }catch(e){stopCam();$('serr').textContent='Camera could not open. Allow camera access in your browser, or use the photo upload or number box below.'}
+}
+async function stopCam(){
+  try{if(scanner){await scanner.stop();scanner.clear()}}catch(e){}
+  scanner=null;$('reader').hidden=true;$('camBtn').hidden=false;$('stopBtn').hidden=true;
+}
+function fromPhoto(inp){
+  var f=inp.files&&inp.files[0];if(!f)return;$('serr').textContent='';
+  if(!window.Html5Qrcode){$('serr').textContent='The scanner could not load. Type the number instead.';return}
+  new Html5Qrcode('tmp').scanFile(f,false).then(function(t){lookup(t)}).catch(function(){$('serr').textContent='No code found in that photo. Try a clearer, closer photo, or type the number.'});
+  inp.value='';
+}
+function lookup(code){
+  code=String(code||'').trim();
+  if(!code){$('serr').textContent='Enter the code number first.';return}
+  var m=DB.find(function(x){return x.c===code});
+  scanned=true;
+  if(m)openMed(m,true);else notFound(code);
+}
+
+// ---------- search ----------
+function norm(s){return s.toLowerCase().replace(/[^a-z0-9]/g,'')}
+function subseq(q,t){var i=0;for(var j=0;j<t.length&&i<q.length;j++)if(t[j]==q[i])i++;return i==q.length}
+function doSearch(){
+  var q=norm($('q').value),r=DB.filter(function(m){var t=norm(m.n+m.g+m.u);return !q||t.indexOf(q)>-1||(q.length>=3&&subseq(q,norm(m.n)))});
+  $('sres').innerHTML=r.length?r.map(function(m){return '<button class="item" onclick="openByCode(\''+m.c+'\')"><span class="em">'+m.e+'</span><span><b>'+esc(m.n)+'</b><br><span class="mute" style="font-size:15px">'+esc(m.u.slice(0,60))+'…</span></span></button>'}).join(''):'<p class="card">Not in the built-in demo list: “'+esc($('q').value)+'”.</p>';
+  if($('q').value.trim().length>=3)$('sres').innerHTML+='<div class="card"><b>Medicine not listed?</b><p class="mute" style="margin:4px 0 10px">MediScan AI can look up other medicines. These summaries are not verified, so check with a pharmacist.</p><button class="p" onclick="askAI()">Look up “'+esc($('q').value.trim())+'”</button></div>';
+  return r.length;
+}
+function go(){var q=$('q').value.trim();if(q.length<2)return;if(!doSearch())askAI()}
+function byCode(c){return DB.find(function(x){return x.c===c})||sget('ms_ai',{})[c]}
+function same(a,b){a=norm(String(a));b=norm(String(b));return a&&b&&(a==b||a.indexOf(b)>-1||b.indexOf(a)>-1)}
+async function askAI(q,box){
+  q=(q||$('q').value).trim();box=box||$('sres');var k=norm(q);if(q.length<2)return;
+  var cache=sget('ms_ai',{}),hit=Object.keys(cache).map(function(i){return cache[i]}).find(function(m){return norm(m.n)==k||norm(m.g)==k});
+  if(hit){scanned=false;return openMed(hit,false)}
+  box.innerHTML='<p class="card">Looking up “'+esc(q)+'”… this can take a few seconds.</p>';
+  try{
+    var sm=window.claude&&await claude.use('sample');
+    if(!sm){box.innerHTML='<p class="card er">AI lookup is not available here. Open this page while signed in to Claude, or try another spelling.</p>';return}
+    var r=await sm.json('You are a medicine information assistant inside a hackathon app. The user typed this medicine name: "'+q.replace(/"/g,"'")+'". If it is a real, recognisable medicine (generic or common brand name), answer with JSON only: {"found":true,"name":"","generic":"generic name in lowercase","uses":"","dosage":"usual adult dose","side_effects":"","warnings":"","storage":"","interactions":[{"with":"generic name in lowercase","note":""}]}. Use plain words an elderly person can follow, and keep each field under 40 words. If it is not a medicine, or you are not sure it exists, answer {"found":false}. Never invent a medicine.');
+    if(!r||!r.found){box.innerHTML='<p class="card">“'+esc(q)+'” was not recognised as a medicine. Check the spelling or try the generic name.</p>';return}
+    function t(v){return String(v||'Not available. Ask your pharmacist.')}
+    var m={c:'ai:'+norm(r.name||q),n:t(r.name||q),g:t(r.generic||r.name||q).toLowerCase(),m:'AI summary',e:'💊',u:t(r.uses),d:t(r.dosage),s:t(r.side_effects),w:t(r.warnings),st:t(r.storage),x:(Array.isArray(r.interactions)?r.interactions:[]).slice(0,6).map(function(i){return [t(i.with).toLowerCase(),t(i.note)]}),ai:true};
+    cache[m.c]=m;sset('ms_ai',cache);scanned=false;openMed(m,false);
+  }catch(e){
+    box.innerHTML='<p class="card er">'+(e&&e.code=='not_granted'?'AI lookup needs your permission. Tap the button again and allow it.':e&&e.code=='rate_limited'?'Too many lookups. Wait a minute and try again.':'The lookup failed. Check your connection and try again.')+'</p>';
+  }
+}
+function openByCode(c){scanned=false;openMed(byCode(c),false)}
+
+// ---------- result ----------
+function mine(){return sget('ms_mine_'+user,[])}
+function saved(){return sget('ms_saved_'+user,[])}
+function notFound(code){
+  cur=null;var nm=/^[\d\s-]+$/.test(code)?'':code;
+  $('v-result').innerHTML='<button class="g" onclick="show(\'scan\')">‹ Back</button>'+
+  '<div class="alert er" style="margin-top:14px"><span aria-hidden="true">⚠️</span><span><b>Not verified</b>The code “'+esc(code)+'” is not in the MediScan database, so we cannot confirm this pack is genuine. A barcode number alone does not tell us the medicine name.</span></div>'+
+  '<div class="card"><h3>Still see the medicine details</h3><p class="mute">Type the medicine name printed on the pack.</p><label for="nm">Medicine name</label><input id="nm" value="'+esc(nm)+'" placeholder="e.g. Dolo 650" onkeydown="if(event.key==\'Enter\')askAI($(\'nm\').value,$(\'nres\'))"><button class="p" style="width:100%;margin-top:10px" onclick="askAI($(\'nm\').value,$(\'nres\'))">Show details</button><div id="nres" style="margin-top:8px"></div></div>';
+  show('result');
+}
+function openMed(m,sc){
+  cur=m;scanned=sc;
+  var inSaved=saved().indexOf(m.c)>-1,inMine=mine().indexOf(m.c)>-1;
+  $('v-result').innerHTML=
+  '<button class="g" onclick="back()">‹ Back</button>'+
+  '<h2 style="margin:14px 0 4px;font-size:28px">'+esc(m.n)+'</h2>'+
+  '<div class="mute">'+esc(m.g)+' · '+esc(m.m)+'</div>'+
+  (m.ai?'<div class="alert wa"><span aria-hidden="true">🤖</span><span><b>AI summary, not verified</b>This was written by AI, not taken from a checked drug database. Confirm with a pharmacist or doctor before use.</span></div>':sc?'<div class="alert ok"><span aria-hidden="true">✅</span><span><b>Verified</b>This code matches a medicine in the MediScan database.</span></div>'
+     :'<div class="alert wa"><span aria-hidden="true">ℹ️</span><span><b>Found by name</b>Scan the pack\'s code to check it is genuine.</span></div>')+
+  '<div id="alerts"></div>'+
+  '<div class="photo" aria-hidden="true">'+m.e+'<i>Demo image</i></div>'+
+  '<div class="row" style="margin:12px 0"><button class="p" id="lis" onclick="listen()">🔊 Listen</button><button onclick="toggle(\'saved\')">'+(inSaved?'✓ Saved':'Save')+'</button><button onclick="toggle(\'mine\')">'+(inMine?'✓ In my medicines':'I take this')+'</button></div>'+
+  '<div class="card"><label for="exp" style="margin-top:0">Expiry date on the pack</label><input id="exp" type="date" onchange="checkExp()"><div id="expr"></div></div>'+
+  '<div class="card">'+sec('Uses',m.u)+sec('Dosage',m.d)+sec('Side effects',m.s)+sec('Warnings',m.w)+
+  (m.x.length?'<div class="sec"><h3>Interactions</h3>'+m.x.map(function(i){return '<p style="margin:4px 0"><b>With '+esc(i[0])+':</b> '+esc(i[1])+'</p>'}).join('')+'</div>':'<div class="sec"><h3>Interactions</h3><p style="margin:0">No clashes with the other demo medicines. Still tell your doctor about everything you take.</p></div>')+
+  sec('Storage',m.st)+'</div>'+
+  '<p class="mute" style="font-size:15px">Demo data, not medical advice. MediScan is for information only. Always follow your doctor\'s or pharmacist\'s advice.</p>';
+  // interaction alerts against "my medicines"
+  var hit=m.x.filter(function(i){return mine().some(function(c){var o=byCode(c);return o&&same(o.g,i[0])})});
+  $('alerts').innerHTML=hit.map(function(i){return '<div class="alert er"><span aria-hidden="true">⛔</span><span><b>May clash with '+esc(i[0])+', which you take</b>'+esc(i[1])+' Ask your doctor or pharmacist before taking both.</span></div>'}).join('')+
+  '<div class="alert wa"><span aria-hidden="true">⚠️</span><span><b>Read the warnings before you take it</b>Do not go above the dose shown. Ask a doctor or pharmacist if unsure.</span></div>';
+  show('result');
+}
+function sec(t,x){return '<div class="sec"><h3>'+t+'</h3><p style="margin:0">'+esc(x)+'</p></div>'}
+function back(){window.speechSynthesis&&speechSynthesis.cancel();show(scanned?'scan':'search')}
+function checkExp(){
+  var v=$('exp').value,o=$('expr');if(!v){o.innerHTML='';return}
+  var days=Math.floor((new Date(v+'T23:59:59')-new Date())/864e5);
+  o.innerHTML=days<0?'<div class="alert er"><span aria-hidden="true">⛔</span><span><b>Expired</b>Do not use this medicine. Return it to a pharmacy.</span></div>'
+   :days<=30?'<div class="alert wa"><span aria-hidden="true">⏳</span><span><b>Expiring soon</b>It expires in '+days+' day'+(days==1?'':'s')+'. Use it soon or replace it.</span></div>'
+   :'<div class="alert ok"><span aria-hidden="true">✅</span><span><b>Not expired</b>This pack is within its expiry date.</span></div>';
+}
+function toggle(kind){
+  var k='ms_'+kind+'_'+user,a=sget(k,[]),i=a.indexOf(cur.c);
+  if(i>-1)a.splice(i,1);else a.push(cur.c);
+  sset(k,a);var e=$('exp')?$('exp').value:'';openMed(cur,scanned);if(e){$('exp').value=e;checkExp()}
+}
+function listen(){
+  if(!window.speechSynthesis){alert('Voice read-out is not supported on this browser.');return}
+  var s=speechSynthesis;if(s.speaking){s.cancel();$('lis').textContent='🔊 Listen';return}
+  var m=cur,u=new SpeechSynthesisUtterance(m.n+'. Uses: '+m.u+' Dosage: '+m.d+' Side effects: '+m.s+' Warnings: '+m.w+' Storage: '+m.st);
+  u.rate=.9;u.onend=function(){if($('lis'))$('lis').textContent='🔊 Listen'};
+  $('lis').textContent='⏹ Stop';s.speak(u);
+}
+
+// ---------- saved ----------
+function renderSaved(){
+  function list(codes,k,empty){
+    return codes.length?codes.map(function(c){var m=byCode(c);return m?'<div class="row" style="align-items:stretch"><button class="item" style="flex:3" onclick="openByCode(\''+c+'\')"><span class="em">'+m.e+'</span><b>'+esc(m.n)+'</b></button><button class="g" style="flex:1;margin:8px 0" aria-label="Remove '+esc(m.n)+'" onclick="rm(\''+k+'\',\''+c+'\')">Remove</button></div>':''}).join(''):'<p class="card mute">'+empty+'</p>';
+  }
+  $('saved').innerHTML=list(saved(),'saved','Nothing saved yet. Open a medicine and tap Save.');
+  $('mine').innerHTML=list(mine(),'mine','Empty. Open a medicine you take and tap “I take this”.');
+}
+function rm(kind,c){var k='ms_'+kind+'_'+user,a=sget(k,[]);sset(k,a.filter(function(x){return x!=c}));renderSaved()}
+
+// ---------- start ----------
+(async function(){
+  var u=sget('ms_session','');var users=sget('ms_users',{});
+  if(!users.demo){users.demo=await hash('demo123');sset('ms_users',users)}
+  enter(u&&users[u]?u:'guest');
+  $('q').addEventListener('keydown',function(e){if(e.key=='Enter')go()});
+  $('pw').addEventListener('keydown',function(e){if(e.key=='Enter')doAuth()});
+})();
+</script>
+</body>
+</html>
